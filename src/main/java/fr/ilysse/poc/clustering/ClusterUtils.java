@@ -1,11 +1,14 @@
 package fr.ilysse.poc.clustering;
 
-import fr.ilysse.poc.color.converter.LAB;
 import com.google.common.base.Stopwatch;
+import fr.ilysse.poc.color.converter.LAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by p_poucif on 03/11/2016.
@@ -16,9 +19,14 @@ public class ClusterUtils {
 
     public Map<LAB,Integer> kMeans(int nbCluster, int K, List<LAB> dataToClustered){
         Map<LAB,Integer> kMeansMap = new HashMap<LAB,Integer>();
-
         List<Cluster> initialeClusters = clustersInitialization(nbCluster,dataToClustered);
 
+        for(int i=0;i<initialeClusters.size();i++){
+            List<LAB> clusterListOfLAB = initialeClusters.get(i).getListOfLAB();
+            for(LAB lab : clusterListOfLAB){
+                kMeansMap.put(lab,i);
+            }
+        }
 
         return kMeansMap;
     }
@@ -49,29 +57,4 @@ public class ClusterUtils {
     }
 
 
-    private class Cluster{
-        private List<LAB> listOfLAB;
-        private double[] meanLAB;
-
-        public Cluster(){
-            this.listOfLAB = new ArrayList<>();
-            this.meanLAB = new double[2];
-        }
-
-        public void add(LAB lab){
-            listOfLAB.add(lab);
-            meanLAB[0] += lab.getA();
-            meanLAB[1] += lab.getB();
-        }
-
-        public List<LAB> getListOfLAB(){
-            return listOfLAB;
-        }
-
-        public double[] getMeanLAB(){
-            meanLAB[0] /= listOfLAB.size();
-            meanLAB[1] /= listOfLAB.size();
-            return meanLAB;
-        }
-    }
 }

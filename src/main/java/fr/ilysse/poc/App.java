@@ -2,6 +2,7 @@ package fr.ilysse.poc;
 
 import fr.ilysse.poc.clustering.ClusterUtils;
 import fr.ilysse.poc.color.converter.ColorConverterData;
+import fr.ilysse.poc.color.converter.LAB;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 
 public class App {
@@ -29,8 +31,17 @@ public class App {
                 imageBuffered = ImageIO.read(dir.toFile());
                 ColorConverterData colorDatas = new ColorConverterData(imageBuffered);
                 ClusterUtils clusterUtils = new ClusterUtils();
-                clusterUtils.kMeans(3,2,colorDatas.getListOfLAB());
-                System.out.println(colorDatas);
+                Map<LAB,Integer> kMeansMap =clusterUtils.kMeans(3,2,colorDatas.getListOfLAB());
+                BufferedImage finalBufferedImage = colorDatas.getImagePostKMeans(kMeansMap);
+
+                JFrame frame = new JFrame();
+                JLabel label = new JLabel(new ImageIcon(finalBufferedImage));
+                frame.setSize(finalBufferedImage.getWidth(),finalBufferedImage.getHeight());
+                frame.add(label);
+                frame.setVisible(true);
+
+
+
             }catch (IOException e){
                 System.out.println(e.getMessage());
             }
@@ -39,11 +50,7 @@ public class App {
 
 
 
-            JFrame frame = new JFrame();
-            JLabel label = new JLabel(new ImageIcon(imageBuffered));
-            frame.setSize(imageBuffered.getWidth(),imageBuffered.getHeight());
-            frame.add(label);
-            frame.setVisible(true);
+
 
 
 

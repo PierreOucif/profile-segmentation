@@ -16,7 +16,25 @@ public class ColorConverterData {
     private static final Logger LOGGER = LoggerFactory.getLogger(ColorConverterData.class);
     private Map<LAB,Color> RGBMappedToLAB;
     private List<LAB> listOfLAB;
+    private Map<Color,LAB> LABPMapToRGB;
+    private Color[][] colorTwoDim;
+    private Map<Integer,Color> rgbCluster;
+    private int xMax;
+    private int yMax;
 
+    public BufferedImage getImagePostKMeans(Map<LAB,Integer> map){
+        final BufferedImage finalImage = new BufferedImage(xMax,yMax,BufferedImage.TYPE_INT_RGB);
+
+        for(int x=0;x<xMax;x++){
+            for(int y=0;y<yMax;y++){
+                Color colorXY = rgbCluster.get(map.get(LABPMapToRGB.get(colorTwoDim[x][y])));
+                finalImage.setRGB(x,y,colorXY.getRGB());
+            }
+        }
+
+
+        return finalImage;
+    }
     private void initializeColorDatas(BufferedImage image){
 
         LOGGER.info("Start initialization of the color datas ...");
@@ -24,13 +42,18 @@ public class ColorConverterData {
 
         Map<LAB,Color> vRGBMappedToLAB = new HashMap<>();
         List<LAB> vListOfLAB = new ArrayList<>();
-
+        LABPMapToRGB = new HashMap<>();
+        xMax = image.getWidth();
+        yMax = image.getHeight();
+        colorTwoDim = new Color[xMax][yMax];
         timer.start();
-        for(int w=0;w<image.getWidth();w++){
-            for(int h=0;h<image.getHeight();h++){
+        for(int w=0;w<xMax;w++){
+            for(int h=0;h<yMax;h++){
                 Color colorWH = new Color(image.getRGB(w,h));
+                colorTwoDim[w][h]=colorWH;
                 LAB LABWH = new LAB(colorWH);
                 vRGBMappedToLAB.put(LABWH,colorWH);
+                LABPMapToRGB.put(colorWH,LABWH);
                 vListOfLAB.add(LABWH);
             }
         }
@@ -42,6 +65,10 @@ public class ColorConverterData {
 
     public ColorConverterData(BufferedImage image){
         initializeColorDatas(image);
+        this.rgbCluster = new HashMap<>();
+        rgbCluster.put(0,new Color(0,255,0,0));
+        rgbCluster.put(1,new Color(0,0,255,0));
+        rgbCluster.put(2,new Color(0,0,0,255));
     }
 
     public Map<LAB,Color> getRGBMappedToLAB(){
@@ -51,4 +78,6 @@ public class ColorConverterData {
     public List<LAB> getListOfLAB(){
         return listOfLAB;
     }
+
+    public Map<Color,LAB> getLABPMapToRGB(){return LABPMapToRGB;}
 }
