@@ -7,6 +7,7 @@ import fr.ilysse.poc.image.ImageUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,23 +35,23 @@ public class App {
                 ClusterUtils clusterUtils = new ClusterUtils();
 
                 Long[][] LABBornes = ImageUtils.getLABBornes(colorDatas.getListOfLAB());
-                ImageUtils.getImageOfLAB(colorDatas.getListOfLAB(),LABBornes);
-
+                Map<String,Object> xyOfLAB = ImageUtils.getXYOfLAB(colorDatas.getListOfLAB(),LABBornes);
+                BufferedImage labImage = ImageUtils.getImageFromXYLAB(xyOfLAB);
 
                 Map<LAB,Integer> kMeansMap =clusterUtils.kMeans(3,2,colorDatas.getListOfLAB());
                 BufferedImage finalBufferedImage = colorDatas.getImagePostKMeans(kMeansMap);
 
                 JFrame frameInit = new JFrame();
-                JLabel labelInit = new JLabel(new ImageIcon(imageBuffered));
-                frameInit.setSize(imageBuffered.getWidth(),imageBuffered.getHeight());
+                JLabel labelInit = new JLabel(new ImageIcon(labImage));
+                frameInit.setSize(labImage.getWidth(),labImage.getHeight());
                 frameInit.add(labelInit);
                 frameInit.setVisible(true);
 
-                JFrame frameFinal = new JFrame();
-                JLabel labelFinal = new JLabel(new ImageIcon(finalBufferedImage));
-                frameFinal.setSize(finalBufferedImage.getWidth(),finalBufferedImage.getHeight());
-                frameFinal.add(labelFinal);
-                frameFinal.setVisible(true);
+//                JFrame frameFinal = new JFrame();
+//                JLabel labelFinal = new JLabel(new ImageIcon(finalBufferedImage));
+//                frameFinal.setSize(finalBufferedImage.getWidth(),finalBufferedImage.getHeight());
+//                frameFinal.add(labelFinal);
+//                frameFinal.setVisible(true);
 
 
 

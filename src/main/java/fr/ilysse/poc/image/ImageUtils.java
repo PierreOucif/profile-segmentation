@@ -2,7 +2,11 @@ package fr.ilysse.poc.image;
 
 import fr.ilysse.poc.color.converter.LAB;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by p_poucif on 10/11/2016.
@@ -39,7 +43,7 @@ public class ImageUtils {
 
 
 
-    public static LAB[][] getImageOfLAB(List<LAB> listOfLAB,Long[][] bornes) throws Exception{
+    public static Map<String,Object> getXYOfLAB(List<LAB> listOfLAB,Long[][] bornes) throws Exception{
         int xmin = Math.toIntExact(bornes[0][0]);
         int xmax = Math.toIntExact(bornes[0][1]);
         int ymin = Math.toIntExact(bornes[1][0]);
@@ -64,7 +68,31 @@ public class ImageUtils {
             }
         }
 
-        return labImage;
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("xScale",xScale);
+        resultMap.put("yScale",yScale);
+        resultMap.put("labImage",labImage);
+        return resultMap;
+
+    }
+
+    public static BufferedImage getImageFromXYLAB(Map<String,Object> objectsMap){
+        BufferedImage image = new BufferedImage((int)objectsMap.get("xScale"),(int)objectsMap.get("yScale"),BufferedImage.TYPE_INT_RGB);
+        LAB[][] lab = (LAB[][])objectsMap.get("labImage");
+        Color white = new Color(255,255,255);
+        Color black = new Color(0,0,0);
+
+        for(int x=0;x<(int)objectsMap.get("xScale");x++){
+            for(int y=0;y<(int)objectsMap.get("yScale");y++){
+                if(lab[x][y]!=null){
+                    image.setRGB(x,y,black.getRGB());
+                }else{
+                    image.setRGB(x,y,white.getRGB());
+                }
+            }
+        }
+
+        return image;
 
     }
 
