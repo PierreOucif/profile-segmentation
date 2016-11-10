@@ -24,7 +24,7 @@ public class App {
     }
 
     @SuppressWarnings({"all"})
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws Exception, IOException, URISyntaxException {
 
         Files.newDirectoryStream(Paths.get(CURRENT_PATH.toURI()),"*.{jpg}").forEach((Path dir)->{
             BufferedImage imageBuffered = null;
@@ -54,7 +54,7 @@ public class App {
 
 
 
-            }catch (IOException e){
+            }catch (Exception e){
                 System.out.println(e.getMessage());
             }
 
