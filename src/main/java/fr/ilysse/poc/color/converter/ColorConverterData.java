@@ -21,6 +21,7 @@ public class ColorConverterData {
     private Map<Integer,Color> rgbCluster;
     private int xMax;
     private int yMax;
+    private LAB[][] LABTwoDim;
 
     public BufferedImage getImagePostKMeans(Map<LAB,Integer> map){
         final BufferedImage finalImage = new BufferedImage(xMax,yMax,BufferedImage.TYPE_INT_RGB);
@@ -45,13 +46,17 @@ public class ColorConverterData {
         LABPMapToRGB = new HashMap<>();
         xMax = image.getWidth();
         yMax = image.getHeight();
+        LOGGER.info("x_max = {} / y_max = {} / nb_pixel = {}",xMax,yMax,xMax*yMax);
         colorTwoDim = new Color[xMax][yMax];
+        LABTwoDim = new LAB[xMax][yMax];
+
         timer.start();
         for(int w=0;w<xMax;w++){
             for(int h=0;h<yMax;h++){
                 Color colorWH = new Color(image.getRGB(w,h));
                 colorTwoDim[w][h]=colorWH;
                 LAB LABWH = new LAB(colorWH);
+                LABTwoDim[w][h] = LABWH;
                 vRGBMappedToLAB.put(LABWH,colorWH);
                 LABPMapToRGB.put(colorWH,LABWH);
                 vListOfLAB.add(LABWH);
@@ -66,9 +71,9 @@ public class ColorConverterData {
     public ColorConverterData(BufferedImage image){
         initializeColorDatas(image);
         this.rgbCluster = new HashMap<>();
-        rgbCluster.put(0,new Color(0,255,0,0));
-        rgbCluster.put(1,new Color(0,0,255,0));
-        rgbCluster.put(2,new Color(0,0,0,255));
+        rgbCluster.put(0,new Color(255,0,0));
+        rgbCluster.put(1,new Color(0,255,0));
+        rgbCluster.put(2,new Color(0,0,255));
     }
 
     public Map<LAB,Color> getRGBMappedToLAB(){
@@ -80,4 +85,6 @@ public class ColorConverterData {
     }
 
     public Map<Color,LAB> getLABPMapToRGB(){return LABPMapToRGB;}
+
+    public LAB[][] getLABTwoDim(){ return LABTwoDim;}
 }

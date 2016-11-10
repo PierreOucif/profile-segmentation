@@ -3,6 +3,7 @@ package fr.ilysse.poc;
 import fr.ilysse.poc.clustering.ClusterUtils;
 import fr.ilysse.poc.color.converter.ColorConverterData;
 import fr.ilysse.poc.color.converter.LAB;
+import fr.ilysse.poc.image.ImageUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,14 +32,25 @@ public class App {
                 imageBuffered = ImageIO.read(dir.toFile());
                 ColorConverterData colorDatas = new ColorConverterData(imageBuffered);
                 ClusterUtils clusterUtils = new ClusterUtils();
+
+                Long[][] LABBornes = ImageUtils.getLABBornes(colorDatas.getListOfLAB());
+                ImageUtils.getImageOfLAB(colorDatas.getListOfLAB(),LABBornes);
+
+
                 Map<LAB,Integer> kMeansMap =clusterUtils.kMeans(3,2,colorDatas.getListOfLAB());
                 BufferedImage finalBufferedImage = colorDatas.getImagePostKMeans(kMeansMap);
 
-                JFrame frame = new JFrame();
-                JLabel label = new JLabel(new ImageIcon(finalBufferedImage));
-                frame.setSize(finalBufferedImage.getWidth(),finalBufferedImage.getHeight());
-                frame.add(label);
-                frame.setVisible(true);
+                JFrame frameInit = new JFrame();
+                JLabel labelInit = new JLabel(new ImageIcon(imageBuffered));
+                frameInit.setSize(imageBuffered.getWidth(),imageBuffered.getHeight());
+                frameInit.add(labelInit);
+                frameInit.setVisible(true);
+
+                JFrame frameFinal = new JFrame();
+                JLabel labelFinal = new JLabel(new ImageIcon(finalBufferedImage));
+                frameFinal.setSize(finalBufferedImage.getWidth(),finalBufferedImage.getHeight());
+                frameFinal.add(labelFinal);
+                frameFinal.setVisible(true);
 
 
 
