@@ -19,14 +19,19 @@ public class ClusterUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterUtils.class);
 
 
-    public void executeKMeans(int nbCluster,int nbIteration,List<LAB> listOfLABs){
+    public List<LAB> executeKMeans(int nbCluster,int nbIteration,List<LAB> listOfLABs){
+        LOGGER.info("Starting kMeans computation for K = {} and nbIteration = {} for {} LABs",nbCluster,nbIteration,listOfLABs.size());
         List<LAB> meanLABs = initialization(nbCluster,listOfLABs);
         ImageUtils.displayLAB(listOfLABs);
 
         for(int i=0;i<nbIteration;i++) {
+            LOGGER.info("Starting iteration #{}",i);
            meanLABs  = calculateNewLABClusters(listOfLABs, meanLABs);
            ImageUtils.displayLAB(listOfLABs);
+            LOGGER.info("Ending iteration #{}",i);
         }
+
+        return listOfLABs;
     }
 
 

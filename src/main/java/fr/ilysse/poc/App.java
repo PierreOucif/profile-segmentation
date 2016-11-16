@@ -6,7 +6,6 @@ import fr.ilysse.poc.color.converter.LAB;
 import fr.ilysse.poc.image.ImageUtils;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 
@@ -31,14 +31,14 @@ public class App {
                 ColorConverterData colorDatas = new ColorConverterData(imageBuffered);
                 ClusterUtils clusterUtils = new ClusterUtils();
 
-                clusterUtils.executeKMeans(3,3,colorDatas.getListOfLAB());
+                List<LAB> computedLABs = clusterUtils.executeKMeans(3,3,colorDatas.getListOfLAB());
 
-
+                imageBuffered= ImageUtils.getClusteredImage(imageBuffered, colorDatas.getLABPMapToRGB());
+                ImageUtils.displayImage(imageBuffered);
 
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
-
 
 
 

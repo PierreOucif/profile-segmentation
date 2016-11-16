@@ -25,11 +25,7 @@ public class ImageUtils {
         try {
             Map<String, Object> map = getXYOfLAB(listOfLABs, getLABBornes(listOfLABs));
             BufferedImage bufferedImage =getImageFromXYLAB(map);
-             JFrame frameInit = new JFrame();
-             JLabel labelInit = new JLabel(new ImageIcon(bufferedImage));
-             frameInit.setSize(bufferedImage.getWidth(),bufferedImage.getHeight());
-             frameInit.add(labelInit);
-             frameInit.setVisible(true);
+            displayImage(bufferedImage);
         }catch (Exception e){
             LOGGER.error(e.getMessage());
         }
@@ -160,6 +156,24 @@ public class ImageUtils {
     }
 
 
+    public static BufferedImage getClusteredImage(BufferedImage initialeImage,Map<Color,LAB> colorsMapToLABs){
+        final int X_MAX = initialeImage.getWidth();
+        final int Y_MAX = initialeImage.getHeight();
+        for(int x=0;x<X_MAX;x++){
+            for(int y=0;y<Y_MAX;y++){
+                LAB lab = colorsMapToLABs.get(new Color(initialeImage.getRGB(x,y)));
+                initialeImage.setRGB(x,y,getRGBForCluster(lab.getClusterIndex()));
+            }
+        }
+        return initialeImage;
+    }
 
+    public static void displayImage(BufferedImage bufferedImage){
+        JFrame frameInit = new JFrame();
+        JLabel labelInit = new JLabel(new ImageIcon(bufferedImage));
+        frameInit.setSize(bufferedImage.getWidth(),bufferedImage.getHeight());
+        frameInit.add(labelInit);
+        frameInit.setVisible(true);
+    }
 
 }
