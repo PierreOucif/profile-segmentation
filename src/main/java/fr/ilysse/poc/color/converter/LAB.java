@@ -17,6 +17,13 @@ public class LAB {
     private float L;
     private float A;
     private float B;
+    private Integer clusterIndex = null;
+
+    public LAB(){
+        this.L = 0;
+        this.A = 0;
+        this.B = 0;
+    }
 
     public LAB(Color RGBColor){
         float[] LAB = RGBtoLAB(RGBColor);
@@ -88,6 +95,8 @@ public class LAB {
         return AB;
     }
 
+    public void setClusterIndex(Integer clusterIndex){this.clusterIndex=clusterIndex;}
 
+    public Integer getClusterIndex(){ return clusterIndex;}
 
 }

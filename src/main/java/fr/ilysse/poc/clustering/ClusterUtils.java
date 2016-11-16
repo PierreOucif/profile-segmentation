@@ -2,6 +2,7 @@ package fr.ilysse.poc.clustering;
 
 import com.google.common.base.Stopwatch;
 import fr.ilysse.poc.color.converter.LAB;
+import fr.ilysse.poc.image.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,45 +18,95 @@ public class ClusterUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterUtils.class);
 
-    public Map<LAB,Integer> kMeans(int nbCluster, int K, List<LAB> dataToClustered){
-        Map<LAB,Integer> kMeansMap = new HashMap<LAB,Integer>();
-        List<Cluster> initialeClusters = clustersInitialization(nbCluster,dataToClustered);
 
-        for(int i=0;i<initialeClusters.size();i++){
-            List<LAB> clusterListOfLAB = initialeClusters.get(i).getListOfLAB();
-            for(LAB lab : clusterListOfLAB){
-                kMeansMap.put(lab,i);
-            }
+    public void executeKMeans(int nbCluster,int nbIteration,List<LAB> listOfLABs){
+        List<LAB> meanLABs = initialization(nbCluster,listOfLABs);
+        ImageUtils.displayLAB(listOfLABs);
+
+        for(int i=0;i<nbIteration;i++) {
+           meanLABs  = calculateNewLABClusters(listOfLABs, meanLABs);
+           ImageUtils.displayLAB(listOfLABs);
         }
-
-        return kMeansMap;
     }
 
-    private List<Cluster> clustersInitialization(int nbCluster,List<LAB> dataToClustered){
+
+    private List<LAB> initialization(int nbCluster,List<LAB> dataToClustered){
         LOGGER.info("Initialization of {} random clusters ...",nbCluster);
         Stopwatch timer = Stopwatch.createUnstarted();
-
+        List<LAB> meanLABs = new ArrayList<>();
         // Datas initialization => random clusters
-        List<Cluster> clusters = new ArrayList<>();
         timer.start();
 
 
         for(int i=1; i<=nbCluster;i++){
-            Cluster cluster = new Cluster();
+            LAB meanLAB = new LAB();
+            meanLAB.setClusterIndex(i);
             int jMin = Math.round((i-1)*dataToClustered.size()/nbCluster);
             int jMax = Math.round(i*dataToClustered.size()/nbCluster);
             for(int j = jMin;j<jMax;j++) {
-                cluster.add(dataToClustered.get(j));
+                dataToClustered.get(j).setClusterIndex(i);
+                meanLAB.setA(dataToClustered.get(j).getA()+meanLAB.getA());
+                meanLAB.setB(dataToClustered.get(j).getB()+meanLAB.getB());
             }
-            clusters.add(cluster);
-            LOGGER.info("Cluster #{} from {} to {} : a_mean = {} / b_mean = {}",i,jMin,jMax,cluster.getMeanLAB()[0],cluster.getMeanLAB()[1]);
+            meanLAB.setA(meanLAB.getA()/jMax);
+            meanLAB.setB(meanLAB.getB()/jMax);
+            meanLABs.add(meanLAB);
+            LOGGER.info("Cluster #{} from {} to {} : a_mean = {} / b_mean = {}",i,jMin,jMax,meanLAB.getA(),meanLAB.getB());
         }
         timer.stop();
-        LOGGER.info("{} random clusters were succefully created in {}",clusters.size(),timer);
+        LOGGER.info("{} random clusters were succefully created in {}",meanLABs.size(),timer);
 
-        return clusters;
+        return meanLABs;
     }
 
+
+    public Integer getCloserCentroid(LAB lab, List<LAB> meanLABs){
+        double delta = getDeltaCentroid(lab,meanLABs.get(0));
+        int closerCentroid = 0;
+
+        for(int i=0;i<meanLABs.size();i++){
+            double iDelta = getDeltaCentroid(lab,meanLABs.get(i));
+            if(Double.compare(delta,iDelta)>0){
+                delta=iDelta;
+                closerCentroid=i;
+            }
+        }
+
+        return closerCentroid;
+    }
+
+    public double getDeltaCentroid(LAB lab, LAB meanLAB){
+        double xSquare = Math.pow(lab.getA()-meanLAB.getA(),2);
+        double ySquare = Math.pow(lab.getB()-meanLAB.getB(),2);
+        return Math.sqrt(xSquare+ySquare);
+    }
+
+    public List<LAB> calculateNewLABClusters(List<LAB> listOfLABs, List<LAB> meanLABs){
+        LOGGER.info("Starting to get {} new clusters of {} LABs",meanLABs.size(),listOfLABs.size());
+
+        LOGGER.info("Initialization of the new list of {} mean LABs",meanLABs.size());
+        List<LAB> newMeanLABs = new ArrayList<>();
+        List<Cluster> clusters = new ArrayList<>();
+        for (int i =0;i<meanLABs.size();i++){
+            clusters.add(new Cluster());
+        }
+        LOGGER.info("The new list of {} mean LABs was well initialized",clusters.size());
+
+        for(LAB lab : listOfLABs) {
+            Integer closerCentroidIndex = getCloserCentroid(lab,meanLABs);
+            clusters.get(closerCentroidIndex).add(lab);
+            lab.setClusterIndex(getCloserCentroid(lab, meanLABs));
+        }
+
+
+        for(int i=0;i<clusters.size();i++){
+            newMeanLABs.add(clusters.get(i).getMeanLAB());
+            LOGGER.info("Mean LAB(a = {} ;b = {}) added to cluster #{}",clusters.get(i).getMeanLAB().getA(),clusters.get(i).getMeanLAB().getB(),i);
+        }
+
+        LOGGER.info("Got {} newMeanLABs",newMeanLABs.size());
+        return newMeanLABs;
+    }
 
 
 }

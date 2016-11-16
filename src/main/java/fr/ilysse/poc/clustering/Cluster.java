@@ -2,6 +2,7 @@ package fr.ilysse.poc.clustering;
 
 import fr.ilysse.poc.color.converter.LAB;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,27 +10,26 @@ import java.util.List;
  * Created by Ilysse on 09/11/2016.
  */
 public class Cluster {
-    private List<LAB> listOfLAB;
-    private double[] meanLAB;
+    private Integer n = 0;
+    private LAB meanLAB;
 
     public Cluster(){
-        this.listOfLAB = new ArrayList<>();
-        this.meanLAB = new double[2];
+        this.meanLAB = new LAB();
     }
 
     public void add(LAB lab){
-        listOfLAB.add(lab);
-        meanLAB[0] += lab.getA();
-        meanLAB[1] += lab.getB();
+        meanLAB.setA(lab.getA()+meanLAB.getA());
+        meanLAB.setB(lab.getB()+meanLAB.getB());
+        n++;
     }
 
-    public List<LAB> getListOfLAB(){
-        return listOfLAB;
-    }
-
-    public double[] getMeanLAB(){
-        meanLAB[0] /= listOfLAB.size();
-        meanLAB[1] /= listOfLAB.size();
-        return meanLAB;
+    public LAB getMeanLAB(){
+        if(n!=0) {
+            meanLAB.setA(meanLAB.getA()/n);
+            meanLAB.setB(meanLAB.getB()/n);
+            return meanLAB;
+        }else{
+            return null;
+        }
     }
 }
