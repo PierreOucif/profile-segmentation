@@ -21,9 +21,6 @@ import java.util.Map;
 public class App {
     private static final URL CURRENT_PATH = App.class.getClassLoader().getResource(".");
 
-    private App() {
-    }
-
     @SuppressWarnings({"all"})
     public static void main(String[] args) throws Exception, IOException, URISyntaxException {
 

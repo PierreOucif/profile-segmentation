@@ -32,4 +32,8 @@ public class Cluster {
             return null;
         }
     }
+
+    public  Integer getSize(){
+        return n;
+    }
 }

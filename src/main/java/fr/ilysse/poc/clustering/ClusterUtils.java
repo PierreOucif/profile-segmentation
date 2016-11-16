@@ -100,8 +100,10 @@ public class ClusterUtils {
 
 
         for(int i=0;i<clusters.size();i++){
-            newMeanLABs.add(clusters.get(i).getMeanLAB());
-            LOGGER.info("Mean LAB(a = {} ;b = {}) added to cluster #{}",clusters.get(i).getMeanLAB().getA(),clusters.get(i).getMeanLAB().getB(),i);
+            LAB meanLAB = clusters.get(i).getMeanLAB();
+            meanLAB.setClusterIndex(i);
+            newMeanLABs.add(meanLAB);
+            LOGGER.info("Mean LAB(a = {} ;b = {}) added to cluster #{} containing {} LABs",meanLAB.getA(),meanLAB.getB(),i,clusters.get(i).getSize());
         }
 
         LOGGER.info("Got {} newMeanLABs",newMeanLABs.size());
